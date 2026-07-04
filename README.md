@@ -12,6 +12,8 @@
 
 [![Documentation Status](https://readthedocs.org/projects/cvmatrix/badge/?version=latest)](https://cvmatrix.readthedocs.io/en/latest/?badge=latest)
 
+[![CodeFactor](https://www.codefactor.io/repository/github/sm00thix/cvmatrix/badge/main)](https://www.codefactor.io/repository/github/sm00thix/cvmatrix/overview/main)
+
 [![Tests Status](https://github.com/Sm00thix/CVMatrix/actions/workflows/test_workflow.yml/badge.svg)](https://github.com/Sm00thix/CVMatrix/actions/workflows/test_workflow.yml)
 
 [![Test Coverage](https://coveralls.io/repos/github/sm00thix/cvmatrix/badge.svg?branch=main)](https://coveralls.io/github/sm00thix/cvmatrix?branch=main)
