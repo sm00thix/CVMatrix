@@ -26,6 +26,9 @@ from numpy import typing as npt
 # globals at call time, so the broadened unions take effect once JAX is in use.
 Array = np.ndarray
 Scalar = Union[np.floating, float, int]
+# Integer index arrays (fold validation indices). Under jax.jit/jax.vmap these are
+# abstract tracers, so the alias is broadened alongside ``Array``/``Scalar``.
+IndexArray = npt.NDArray[np.int_]
 # ``dtype`` specifier: ``npt.DTypeLike`` cleanly admits both numpy float types and
 # JAX scalar dtypes (e.g. ``jnp.float64``) without importing JAX.
 FloatDType = npt.DTypeLike
@@ -49,9 +52,10 @@ def _enable_jax_typing() -> None:
     """
     import jax
 
-    global Array, Scalar, _TRACER_TYPES
+    global Array, Scalar, IndexArray, _TRACER_TYPES
     Array = Union[np.ndarray, jax.Array]
     Scalar = Union[np.floating, jax.Array, float, int]
+    IndexArray = Union[npt.NDArray[np.int_], jax.Array]
     _TRACER_TYPES = (jax.core.Tracer,)
 
 
@@ -328,10 +332,8 @@ class CVMatrix:
         self._init_stats()
 
     def training_XTX(
-        self, validation_indices: npt.NDArray[np.int_]
-    ) -> Tuple[
-        Array, Tuple[Optional[Array], Optional[Array], None, None]
-    ]:
+        self, validation_indices: IndexArray
+    ) -> Tuple[Array, Tuple[Optional[Array], Optional[Array], None, None]]:
         r"""
         Computes the training set :math:`\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{X}`
         corresponding to every sample except those at the `validation_indices`. Also
@@ -340,7 +342,7 @@ class CVMatrix:
 
         Parameters
         ----------
-        validation_indices : npt.NDArray[np.int_]
+        validation_indices : IndexArray
             An integer array of indices for the validation set for which to
             return the corresponding training set
             :math:`\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{X}`. The validation indices
@@ -383,7 +385,7 @@ class CVMatrix:
         return self._training_matrices(True, False, validation_indices)
 
     def training_XTY(
-        self, validation_indices: npt.NDArray[np.int_]
+        self, validation_indices: IndexArray
     ) -> Tuple[
         Array,
         Tuple[
@@ -403,7 +405,7 @@ class CVMatrix:
 
         Parameters
         ----------
-        validation_indices : npt.NDArray[np.int_]
+        validation_indices : IndexArray
             An integer array of indices for the validation set for which to
             return the corresponding training set
             :math:`\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{Y}`. The validation indices
@@ -449,7 +451,7 @@ class CVMatrix:
         return self._training_matrices(False, True, validation_indices)
 
     def training_XTX_XTY(
-        self, validation_indices: npt.NDArray[np.int_]
+        self, validation_indices: IndexArray
     ) -> Tuple[
         Tuple[Array, Array],
         Tuple[
@@ -471,7 +473,7 @@ class CVMatrix:
 
         Parameters
         ----------
-        validation_indices : npt.NDArray[np.int_]
+        validation_indices : IndexArray
             An integer array of indices for the validation set for which to
             return the corresponding training set
             :math:`\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{X}` and
@@ -517,7 +519,7 @@ class CVMatrix:
         return self._training_matrices(True, True, validation_indices)
 
     def training_statistics(
-        self, validation_indices: npt.NDArray[np.int_]
+        self, validation_indices: IndexArray
     ) -> Tuple[
         Optional[Array],
         Optional[Array],
@@ -587,7 +589,7 @@ class CVMatrix:
         return x
 
     def _get_sum_w_train_and_num_nonzero_w_train(
-        self, val_indices: npt.NDArray[np.int_]
+        self, val_indices: IndexArray
     ) -> Tuple[Scalar, Scalar]:
         """
         Returns a tuple containing the sum of weights in the training set and the number
@@ -631,7 +633,7 @@ class CVMatrix:
 
     def _compute_training_stats(
         self,
-        val_indices: npt.NDArray[np.int_],
+        val_indices: IndexArray,
         X_val: Optional[Array],
         Y_val: Optional[Array],
         return_X_mean: bool,
@@ -752,7 +754,7 @@ class CVMatrix:
         )
 
     def _training_matrices(
-        self, return_XTX: bool, return_XTY: bool, val_indices: npt.NDArray[np.int_]
+        self, return_XTX: bool, return_XTY: bool, val_indices: IndexArray
     ) -> Tuple[
         Union[Array, Tuple[Array, Array]],
         Tuple[
@@ -777,7 +779,7 @@ class CVMatrix:
             Whether to return the training set
             :math:`\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{Y}`.
 
-        validation_indices : npt.NDArray[np.int_]
+        validation_indices : IndexArray
             An integer array of indices for the validation set for which to
             return the corresponding training set
             :math:`\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{X}` and
@@ -896,7 +898,7 @@ class CVMatrix:
         )
 
     def _get_val_matrices(
-        self, val_indices: npt.NDArray[np.int_], return_XTY: bool
+        self, val_indices: IndexArray, return_XTY: bool
     ) -> Tuple[
         Array,
         Array,
