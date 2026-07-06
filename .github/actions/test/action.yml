@@ -33,5 +33,7 @@ runs:
     # are skipped (pytest.importorskip), verifying the numpy-only path.
     - name: Run tests
       run: |
-        uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=cvmatrix/ --cov-report=xml --typeguard-packages=cvmatrix/
+        # NOTE: --typeguard-packages takes the PACKAGE name "cvmatrix" (not a path); a
+        # trailing slash silently instruments nothing, disabling runtime type checks.
+        uv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=cvmatrix/ --cov-report=xml --typeguard-packages=cvmatrix
       shell: bash

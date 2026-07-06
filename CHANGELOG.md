@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.2] - 2026-07-06
+
+### Changed
+- Lowered the minimum supported Python version from 3.11 to 3.10 (`requires-python = ">=3.10, <3.15"`). The code base uses no Python-3.11-only features; this broadens compatibility for downstream packages that still support Python 3.10. Python 3.10 is now included in the CI test matrices. No functional changes.
+
+### Fixed
+- The fold-index parameters (`validation_indices` / `val_indices`) are now annotated with a new `IndexArray` alias that `_enable_jax_typing()` broadens to admit `jax.Array`, matching the `Array`/`Scalar` aliases introduced in 3.2.1. Previously they were annotated as `npt.NDArray[np.int_]` only, so running the test suite with `typeguard` instrumentation enabled failed on the `jax.jit`/`jax.vmap` trace tests (the indices are abstract tracers under tracing). Runtime behavior is unchanged; this only affects runtime type checking.
+- CI now actually enables `typeguard` instrumentation during tests: the test command passed `--typeguard-packages=cvmatrix/` (a path, with a trailing slash) instead of the package name `cvmatrix`, which silently instrumented nothing and masked the annotation issue above.
+
 ## [3.2.1] - 2026-07-01
 
 ### Changed
