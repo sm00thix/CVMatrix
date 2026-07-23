@@ -26,6 +26,10 @@ For an implementation of the fast cross-validation algorithms combined with Impr
 
 The `cvmatrix` software package now also features **weigthed matrix produts** $\mathbf{X}^{\mathbf{T}}\mathbf{W}\mathbf{Y}$ **without increasing time or space complexity compared to the unweighted case**. This is due to a generalization of the algorithms by Engstrøm and Jensen [[1]](#references). A new article formally describing the generalization is to be announced.
 
+## Citation
+- If you use the `cvmatrix` software package for your work, please cite  [this Journal of Chemometrics article](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/full/10.1002/cem.70008).
+- If you use the sample weighted option, please also cite [this PhD thesis](https://arxiv.org/abs/2510.13452).
+
 ## Installation
 
 - Install the package for Python3 using the following command:
